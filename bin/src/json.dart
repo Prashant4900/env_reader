@@ -3,32 +3,32 @@ part of '../env_reader.dart';
 
 /// A function to generate dart model out of .env file
 void insertJson({required ArgResults from}) {
-  String? model = from["model"]?.toString();
+  final model = from['model']?.toString();
   if (model != null) {
     // Fetching arguments
-    String path = model.replaceAll(RegExp(r'/[^/]+$'), "/");
-    String name = model
-        .split("/")
+    final path = model.replaceAll(RegExp(r'/[^/]+$'), '/');
+    final name = model
+        .split('/')
         .last
-        .split(".")
+        .split('.')
         .first
-        .split("_")
-        .map((e) => capitalize(e))
-        .join("");
-    String input = from["input"]!.toString();
-    bool obfuscate = from['obfuscate'];
-    String data = File(input).readAsStringSync();
-    bool nullSafety = from["null-safety"];
+        .split('_')
+        .map(capitalize)
+        .join();
+    final input = from['input']!.toString();
+    final bool obfuscate = from['obfuscate'];
+    final data = File(input).readAsStringSync();
+    final bool nullSafety = from['null-safety'];
 
     // Parsing .env toJson
-    Map<String, dynamic> json = toJson(data);
+    final json = toJson(data);
 
     // Generating model
-    String cast = json.entries.map((e) {
-      Type type = e.value.runtimeType;
-      String name = dartNamed(e.key);
+    final cast = json.entries.map((e) {
+      final type = e.value.runtimeType;
+      final name = dartNamed(e.key);
       if (obfuscate) {
-        String variable = nullSafety
+        final variable = nullSafety
             ? "Env.read<$type>('${e.key}') ?? ${type == bool ? 'false' : type == int ? '0' : type == double ? '0.0' : "'${e.key}'"}"
             : "Env.read<$type>('${e.key}')";
 
@@ -49,8 +49,8 @@ void insertJson({required ArgResults from}) {
   static const $type $name = ${type == String ? "'${e.value}'" : e.value ?? 'e.key'};
 """;
       }
-    }).join("\n");
-    String write = """
+    }).join('\n');
+    final write = """
 // Env Reader Auto-Generated Model File
 // Created at ${DateTime.now()}
 // 🍔 [Buy me a coffee](https://www.buymeacoffee.com/nialixus) 🚀
@@ -65,7 +65,8 @@ $cast
     Directory(path).createSync(recursive: true);
     File(model).writeAsStringSync(write);
     print(
-        "\x1B[32m$input\x1B[0m successfully generated into \x1B[34m$model\x1B[0m 🎉");
+      '\x1B[32m$input\x1B[0m successfully generated into \x1B[34m$model\x1B[0m 🎉',
+    );
   }
 }
 
@@ -110,8 +111,8 @@ String capitalize(String text) {
 
 /// A function to generate dart naming style of [String].
 String dartNamed(String input) {
-  List<String> words = input.split('_');
-  String firstWord = words.first.toLowerCase();
-  String restOfWords = words.sublist(1).map((word) => capitalize(word)).join();
+  final words = input.split('_');
+  final firstWord = words.first.toLowerCase();
+  final restOfWords = words.sublist(1).map(capitalize).join();
   return '$firstWord$restOfWords';
 }

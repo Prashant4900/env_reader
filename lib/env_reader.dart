@@ -16,12 +16,13 @@
 /// int port = Env.read<int>("PORT") ?? 8080;
 /// bool isDebug = Env.read<bool>("DEBUG") ?? false;
 /// ```
-library env_reader;
+library;
 
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:env_reader/src/env_encryption.dart';
 import 'package:env_reader/src/env_parser.dart';
 import 'package:http/http.dart';
@@ -82,7 +83,7 @@ class EnvReader {
     try {
       value = await source.data(key);
     } catch (e) {
-      log("\u001b[1mEnvReader:\u001b[31m Unable to load data\u001b[0m\n$e");
+      log('\u001b[1mEnvReader:\u001b[31m Unable to load data\u001b[0m\n$e');
     }
   }
 
@@ -106,7 +107,7 @@ class EnvReader {
   /// ```
   T? read<T extends Object>(String key) {
     try {
-      return toJson[key];
+      return toJson[key] as T?;
     } catch (e) {
       return null;
     }
